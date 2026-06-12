@@ -3,7 +3,7 @@
  * Plugin Name: TalkToGo Live Chat
  * Plugin URI:  https://github.com/talktogo/talktogo
  * Description: Adds the TalkToGo live chat widget to your WordPress site. Chat with your visitors in realtime, see who is online and which page they are on.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      TalkToGo
  * License:     GPL-2.0-or-later
  * Text Domain: talktogo
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Direct access not allowed.
 }
 
-define( 'TALKTOGO_VERSION', '1.0.0' );
+define( 'TALKTOGO_VERSION', '1.0.1' );
 
 /**
  * Default options.
@@ -48,13 +48,39 @@ function talktogo_print_widget() {
 		return;
 	}
 
+	// Expose the site id as a global first: optimizers (LiteSpeed, WP Rocket,
+	// Autoptimize) may merge script tags and drop the data-site-id attribute;
+	// the widget falls back to window.talkToGoSiteId.
 	printf(
-		'<script src="%s" data-site-id="%s" async></script>' . "\n",
+		'<script data-no-optimize="1" data-cfasync="false" data-pagespeed-no-defer>window.talkToGoSiteId=%s;</script>' . "\n",
+		wp_json_encode( $options['site_id'] )
+	);
+	printf(
+		'<script src="%s" data-site-id="%s" data-no-optimize="1" data-cfasync="false" async></script>' . "\n",
 		esc_url( $options['widget_url'] ),
 		esc_attr( $options['site_id'] )
 	);
 }
 add_action( 'wp_head', 'talktogo_print_widget', 99 );
+
+/**
+ * Keep the widget out of JS optimization in common cache plugins.
+ */
+function talktogo_js_excludes( $list ) {
+	if ( ! is_array( $list ) ) {
+		$list = array();
+	}
+	$list[] = 'talkToGoSiteId';
+	$options = talktogo_get_options();
+	if ( ! empty( $options['widget_url'] ) ) {
+		$list[] = $options['widget_url'];
+	}
+	return $list;
+}
+add_filter( 'litespeed_optimize_js_excludes', 'talktogo_js_excludes' ); // LiteSpeed combine/minify
+add_filter( 'litespeed_optm_js_defer_exc', 'talktogo_js_excludes' );    // LiteSpeed defer/delay
+add_filter( 'rocket_exclude_js', 'talktogo_js_excludes' );              // WP Rocket
+add_filter( 'autoptimize_filter_js_exclude', 'talktogo_js_excludes' );  // Autoptimize
 
 /**
  * Settings page.

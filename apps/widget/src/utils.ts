@@ -54,6 +54,17 @@ export async function lookupGeo(): Promise<GeoInfo> {
 
   const empty: GeoInfo = { country: null, country_code: null, city: null };
 
+  // Resolve a country name from its ISO code in the browser, so code-only
+  // providers still yield a readable country.
+  const countryName = (code: string | null | undefined): string | null => {
+    if (!code || code.length !== 2 || code === "XX") return null;
+    try {
+      return new Intl.DisplayNames(["en"], { type: "region" }).of(code.toUpperCase()) ?? code;
+    } catch {
+      return code;
+    }
+  };
+
   const providers: Array<() => Promise<GeoInfo>> = [
     async () => {
       const r = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
@@ -65,12 +76,27 @@ export async function lookupGeo(): Promise<GeoInfo> {
       const j = await r.json();
       return { country: j.country ?? null, country_code: j.country_code ?? null, city: j.city ?? null };
     },
+    async () => {
+      // Country code only, but small, fast and rarely blocked.
+      const r = await fetch("https://api.country.is/", { signal: AbortSignal.timeout(4000) });
+      const j = await r.json();
+      return { country: countryName(j.country), country_code: j.country ?? null, city: null };
+    },
+    async () => {
+      // Same-origin Cloudflare trace — works on any Cloudflare-proxied site
+      // and cannot be blocked by ad-blockers (no third-party request).
+      const r = await fetch("/cdn-cgi/trace", { signal: AbortSignal.timeout(3000) });
+      const t = await r.text();
+      const code = /(?:^|\n)loc=([A-Z]{2})/.exec(t)?.[1] ?? null;
+      return { country: countryName(code), country_code: code, city: null };
+    },
   ];
 
   for (const provider of providers) {
     try {
       const geo = await provider();
-      if (geo.country) {
+      if (geo.country || geo.country_code) {
+        geo.country = geo.country ?? countryName(geo.country_code);
         try {
           localStorage.setItem(GEO_CACHE_KEY, JSON.stringify(geo));
         } catch {
