@@ -1,0 +1,17 @@
+{
+  "name": "talktogo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "TalkToGo — livechat platform for any website, with a WordPress plugin, embeddable widget, and realtime agent dashboard.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@talktogo/dashboard",
+    "dev:widget": "npm run dev --workspace=@talktogo/widget",
+    "build": "npm run build --workspace=@talktogo/widget && npm run build --workspace=@talktogo/dashboard && node scripts/copy-widget.mjs",
+    "build:dashboard": "npm run build --workspace=@talktogo/dashboard",
+    "build:widget": "npm run build --workspace=@talktogo/widget",
+    "icons": "node scripts/gen-icons.mjs"
+  }
+}

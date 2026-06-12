@@ -1,0 +1,6 @@
+# Supabase CLI config for TalkToGo
+project_id = "talktogo"
+
+[functions.send-push]
+# The webhook calls this function with the service role key; no user JWT.
+verify_jwt = false
