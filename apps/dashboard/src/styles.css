@@ -831,6 +831,108 @@ a {
   padding: 4px 8px;
 }
 
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll .visitor-table {
+  min-width: 720px;
+}
+
+.back-btn {
+  display: none;
+  border: none;
+  background: var(--bg);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 920px) {
+  .back-btn {
+    display: flex;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 52px;
+    padding: 8px 12px;
+    gap: 8px;
+    row-gap: 6px;
+  }
+
+  .topbar .site-name {
+    display: none;
+  }
+
+  .topbar .brand {
+    font-size: 15px;
+  }
+
+  .tabs {
+    order: 5;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tabs a {
+    flex: 1;
+    text-align: center;
+    padding: 8px 6px;
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .page {
+    padding: 16px 12px 48px;
+  }
+
+  .page-head {
+    flex-wrap: wrap;
+  }
+
+  .page-head h1 {
+    font-size: 19px;
+  }
+
+  .inbox-layout {
+    height: calc(100dvh - 110px);
+  }
+
+  .chat-messages {
+    padding: 14px 12px;
+  }
+
+  .bubble {
+    max-width: 85%;
+  }
+
+  .chat-input-row {
+    padding: 10px 12px;
+  }
+
+  .row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-stage {
+    height: 480px;
+  }
+}
+
 /* notification banner */
 .notif-banner {
   display: flex;

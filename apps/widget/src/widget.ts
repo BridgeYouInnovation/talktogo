@@ -364,6 +364,7 @@ export class TalkToGoWidget {
           <div class="ttg-title">${escapeHtml(s.title)}</div>
           <div class="ttg-subtitle">${escapeHtml(s.subtitle)}</div>
         </div>
+        <button class="ttg-panel-close" aria-label="Close chat">${ICONS.close}</button>
       </div>
       <div class="ttg-messages"></div>
       <div class="ttg-typing" hidden>
@@ -381,6 +382,11 @@ export class TalkToGoWidget {
 
     const sendBtn = this.panelEl.querySelector<HTMLButtonElement>(".ttg-send")!;
     sendBtn.addEventListener("click", () => this.sendMessage(this.inputEl.value));
+    this.panelEl
+      .querySelector<HTMLButtonElement>(".ttg-panel-close")!
+      .addEventListener("click", () => {
+        if (this.open) this.toggle();
+      });
     this.inputEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -448,6 +454,13 @@ export class TalkToGoWidget {
         width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.25);
         display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;
       }
+      .ttg-header-text { flex: 1; min-width: 0; }
+      .ttg-panel-close {
+        border: none; background: rgba(255,255,255,.15); color: #fff; cursor: pointer;
+        width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+        justify-content: center; flex-shrink: 0; transition: background .15s;
+      }
+      .ttg-panel-close:hover { background: rgba(255,255,255,.3); }
       .ttg-title { font-weight: 700; font-size: 16px; }
       .ttg-subtitle { font-size: 12.5px; opacity: .9; margin-top: 2px; }
       .ttg-messages { flex: 1; overflow-y: auto; padding: 16px 14px 8px; background: #f8fafc; }

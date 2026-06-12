@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { ensureNotificationPermission, notifyLocal, subscribeToPush } from "../lib/notifications";
 import { useAuth } from "../lib/useAuth";
+import { useInstallPrompt } from "../lib/useInstallPrompt";
 import type { Site } from "../lib/types";
 
 export interface SiteContext {
@@ -21,6 +22,7 @@ export default function SiteLayout() {
   const [visitorsSignal, setVisitorsSignal] = useState(0);
   const [messagesSignal, setMessagesSignal] = useState(0);
   const [notifState, setNotifState] = useState<"unknown" | "granted" | "needed" | "denied">("unknown");
+  const { showInstall, install } = useInstallPrompt();
   const seenVisitors = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -143,6 +145,11 @@ export default function SiteLayout() {
         {notifState === "needed" && (
           <button className="btn secondary" onClick={enableNotifications}>
             🔔 Enable notifications
+          </button>
+        )}
+        {showInstall && (
+          <button className="btn secondary" onClick={install} title="Install TalkToGo as an app">
+            ⬇️ Install app
           </button>
         )}
         <button className="btn secondary" onClick={() => supabase.auth.signOut()}>

@@ -223,6 +223,13 @@ export default function Inbox() {
         ) : (
           <>
             <div className="chat-head">
+              <button
+                className="back-btn"
+                onClick={() => setParams({})}
+                aria-label="Back to conversations"
+              >
+                ←
+              </button>
               <div className="conv-avatar">
                 {visitorLabel(v).charAt(0).toUpperCase()}
                 <span className={`online-dot ${v?.online ? "" : "off"}`} />

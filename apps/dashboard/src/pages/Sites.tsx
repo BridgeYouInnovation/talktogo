@@ -2,10 +2,12 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/useAuth";
+import { useInstallPrompt } from "../lib/useInstallPrompt";
 import type { Site } from "../lib/types";
 
 export default function Sites() {
   const { session } = useAuth();
+  const { showInstall, install } = useInstallPrompt();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -53,6 +55,11 @@ export default function Sites() {
           <span className="logo-dot">💬</span> TalkToGo
         </span>
         <div className="grow" />
+        {showInstall && (
+          <button className="btn secondary" onClick={install} title="Install TalkToGo as an app">
+            ⬇️ Install app
+          </button>
+        )}
         <button className="btn secondary" onClick={() => supabase.auth.signOut()}>
           Sign out
         </button>
