@@ -8,3 +8,4 @@ dist/
 .vercel/
 apps/dashboard/public/widget.js
 apps/dashboard/dev-dist/
+.vercel
