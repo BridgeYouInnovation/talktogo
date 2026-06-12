@@ -445,6 +445,9 @@ export class TalkToGoWidget {
       @keyframes ttg-pop { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
       @media (max-width: 480px) {
         .ttg-panel { bottom: 0; ${side}: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+        .ttg-header { padding-top: calc(18px + env(safe-area-inset-top)); }
+        .ttg-input-row { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+        .ttg-input { font-size: 16px; } /* prevent iOS focus zoom */
       }
       .ttg-header {
         background: linear-gradient(135deg, ${c}, ${c}dd);
