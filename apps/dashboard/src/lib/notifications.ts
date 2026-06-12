@@ -66,6 +66,8 @@ export async function subscribeToPush(userId: string): Promise<"ok" | "no-permis
 }
 
 // Local notification while the app is open (works even without VAPID setup).
+// Uses the same tag scheme as the push payload so a local and a pushed
+// notification for the same event coalesce instead of doubling up.
 export async function notifyLocal(title: string, body: string, url: string): Promise<void> {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
   try {
@@ -74,7 +76,7 @@ export async function notifyLocal(title: string, body: string, url: string): Pro
       body,
       icon: "/icons/icon-192.png",
       data: { url },
-      tag: `${url}:${body.slice(0, 32)}`,
+      tag: url,
     });
   } catch {
     try {
@@ -82,5 +84,24 @@ export async function notifyLocal(title: string, body: string, url: string): Pro
     } catch {
       /* notifications unavailable */
     }
+  }
+}
+
+// Ask the server to send a real push round-trip to this user's devices —
+// proves the whole pipeline (subscription → server → push service → SW).
+export async function sendTestPush(): Promise<boolean> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) return false;
+  try {
+    const res = await fetch("/api/send-push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ type: "test" }),
+    });
+    const json = await res.json();
+    return (json.sent ?? 0) > 0;
+  } catch {
+    return false;
   }
 }

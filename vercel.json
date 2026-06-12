@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "apps/dashboard/dist",
   "rewrites": [
-    { "source": "/((?!widget\\.js|sw\\.js|manifest\\.webmanifest|icons/).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|widget\\.js|sw\\.js|manifest\\.webmanifest|icons/).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

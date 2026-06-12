@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { ensureNotificationPermission, notifyLocal, subscribeToPush } from "../lib/notifications";
+import {
+  ensureNotificationPermission,
+  notifyLocal,
+  sendTestPush,
+  subscribeToPush,
+} from "../lib/notifications";
 import { useAuth } from "../lib/useAuth";
 import { useInstallPrompt } from "../lib/useInstallPrompt";
 import type { Site } from "../lib/types";
@@ -95,7 +100,17 @@ export default function SiteLayout() {
     setNotifState("granted");
     if (session) {
       const result = await subscribeToPush(session.user.id);
-      if (result === "no-vapid") {
+      if (result === "ok") {
+        // Real round-trip through the push service so the user sees it work.
+        const pushed = await sendTestPush();
+        if (!pushed) {
+          notifyLocal(
+            "🔔 Notifications enabled",
+            "You'll be alerted when a new visitor arrives or a chat comes in.",
+            "/"
+          );
+        }
+      } else if (result === "no-vapid") {
         console.info(
           "[TalkToGo] VITE_VAPID_PUBLIC_KEY not set — background push disabled, in-app notifications still work."
         );

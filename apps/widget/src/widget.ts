@@ -52,6 +52,7 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 export class TalkToGoWidget {
   private siteId: string;
+  private apiOrigin: string;
   private supabase: SupabaseClient;
   private visitorKey: string;
   private visitorId: string | null = null;
@@ -78,8 +79,9 @@ export class TalkToGoWidget {
   private badgeEl!: HTMLSpanElement;
   private typingEl!: HTMLDivElement;
 
-  constructor(siteId: string) {
+  constructor(siteId: string, apiOrigin = "") {
     this.siteId = siteId;
+    this.apiOrigin = apiOrigin.replace(/\/$/, "");
     this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
@@ -136,6 +138,28 @@ export class TalkToGoWidget {
     this.broadcastPresence(data.is_new_visitor ? "enter" : "return");
     this.startHeartbeat();
     this.trackNavigation();
+
+    if (data.is_new_visitor) this.notifyServer("new_visitor");
+  }
+
+  // Ask the TalkToGo server to web-push the site owner (works even when
+  // their dashboard is closed). Fire-and-forget.
+  private notifyServer(type: "new_visitor" | "new_message"): void {
+    if (!this.apiOrigin) return;
+    try {
+      fetch(`${this.apiOrigin}/api/send-push`, {
+        method: "POST",
+        keepalive: true,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type,
+          site_id: this.siteId,
+          visitor_key: this.visitorKey,
+        }),
+      }).catch(() => {});
+    } catch {
+      /* never break the host page */
+    }
   }
 
   // ----------------------------------------------------------
@@ -296,6 +320,7 @@ export class TalkToGoWidget {
       },
     });
     this.broadcastNewMessage(trimmed);
+    this.notifyServer("new_message");
 
     if (!this.identified && !this.identifyDismissed) this.showIdentifyCard();
   }
