@@ -413,6 +413,7 @@ export class TalkToGoWidget {
     return `
       :host { all: initial; }
       * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      [hidden] { display: none !important; }
       .ttg-launcher {
         position: fixed; bottom: 20px; ${side}: 20px; z-index: 2147483000;
         width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer;
