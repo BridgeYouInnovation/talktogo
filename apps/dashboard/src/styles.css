@@ -741,9 +741,20 @@ a {
 
 .settings-layout {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: minmax(0, 1fr) 400px;
   gap: 24px;
   align-items: start;
+}
+
+/* Long unbreakable content (embed snippets, URLs) must not blow out
+   the grid tracks. */
+.settings-layout > * {
+  min-width: 0;
+}
+
+.preview-col {
+  position: sticky;
+  top: 0;
 }
 
 @media (max-width: 920px) {
@@ -811,11 +822,11 @@ a {
   background: #0f172a;
   color: #e2e8f0;
   border-radius: 10px;
-  padding: 16px;
+  padding: 16px 76px 16px 16px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12.5px;
-  overflow-x: auto;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-all;
   line-height: 1.6;
   position: relative;
 }
@@ -963,6 +974,10 @@ a {
 
   .preview-stage {
     height: 480px;
+  }
+
+  .preview-col {
+    position: static;
   }
 }
 

@@ -220,7 +220,7 @@ export default function Settings() {
           </section>
         </div>
 
-        <div style={{ position: "sticky", top: 80 }}>
+        <div className="preview-col">
           <WidgetPreview settings={settings} />
           <p className="toolbar-note" style={{ marginTop: 10 }}>
             The preview updates as you type. Click <b>Save changes</b> to publish — live widgets
